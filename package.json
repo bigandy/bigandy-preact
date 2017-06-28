@@ -18,11 +18,14 @@
   },
   "scripts": {
     "start": "npm-run-all -p watch-css start-js",
-    "build": "react-scripts build",
+    "build": "npm run build-css && react-scripts build && sw-precache --config=sw-precache-config.js",
     "build-css": "node-sass src/ -o src/",
     "watch-css": "npm run build-css && node-sass src/ -o src/ --watch",
     "start-js": "react-scripts start",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "serve": "serve -s build"
   }
 }
