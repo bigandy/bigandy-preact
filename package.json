@@ -16,7 +16,7 @@
     "npm-run-all": "^4.0.2",
     "sw-precache": "^5.2.0"
   },
-  "homepage": "https://bap.bigandy.pw",
+  "homepage": "https://preact.bigandy.pw",
   "scripts": {
     "start": "npm-run-all -p watch-css start-js",
     "build": "npm run build-css && react-scripts build && sw-precache --config=sw-precache-config.js",
