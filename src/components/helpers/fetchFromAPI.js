@@ -14,15 +14,15 @@ const fetchFromAPI = (type = 'posts', number = 9) => {
 
 				postsOutput.forEach((post) => {
 					if (type === 'pages') {
-						store.outbox('pages', 'readwrite')
+						store.outbox('readwrite')
 							.then(tx => {
 								tx.put({
-									post
+									'page': post
 								});
 								return tx.complete;
 						});
 					} else {
-						store.outbox('posts', 'readwrite')
+						store.outbox('readwrite')
 							.then(tx => {
 								tx.put({
 									post

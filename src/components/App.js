@@ -75,8 +75,7 @@ class App extends Component {
 	};
 
 	componentDidMount() {
-
-		store.outbox('posts', 'readwrite')
+		store.outbox('readwrite')
 			.then(db => db.getAll())
 			.then(allObjs => {
 				return new Promise((resolve, reject) => {
@@ -98,7 +97,7 @@ class App extends Component {
 				});
 			});
 
-		store.outbox('pages', 'readwrite')
+		store.outbox('readwrite')
 			.then(db => db.getAll())
 			.then(allObjs => {
 				return new Promise((resolve, reject) => {
