@@ -1,6 +1,6 @@
 import store from './store';
 
-const fetchFromAPI = (type = 'posts', number = 9) => {
+const fetchFromAPI = (type = 'posts') => {
 	return new Promise((resolve, reject) => {
 		fetch(`https://big-andy.co.uk/wp-json/bigandy/v1/posts-pages/`)
 			.then((response) => {
@@ -16,6 +16,7 @@ const fetchFromAPI = (type = 'posts', number = 9) => {
 					if (type === 'pages') {
 						store.outbox('readwrite')
 							.then(tx => {
+								console.log('pages store')
 								tx.put({
 									'page': post
 								});

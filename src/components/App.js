@@ -22,8 +22,11 @@ class App extends Component {
 		this.useIDB = false;
 	};
 
-	showPosts = (posts, deep = false) => {
+	showPosts = (posts, deep = true) => {
 		return posts.map((item, i) => {
+			// console.log(deep);
+
+
 			if (deep === false) {
 				item = item.post;
 			}
@@ -41,8 +44,10 @@ class App extends Component {
 		});
 	};
 
-	showPages = (pages, deep = false) => {
+	showPages(pages, deep = false) {
 		return pages.map(item => {
+			console.log('pages item', item);
+
 			if (deep === false) {
 				item = item.post;
 			}
@@ -75,18 +80,19 @@ class App extends Component {
 	};
 
 	componentDidMount() {
+		// get the posts
 		store.outbox('readwrite')
 			.then(db => db.getAll())
 			.then(allObjs => {
 				return new Promise((resolve, reject) => {
-					if (allObjs.length >= 1) {
+					if (this.useIDB === true && allObjs.length >= 1) {
 						// console.log('already have posts in indexedDB')
 
 						resolve(this.showPosts(allObjs));
 					} else {
-						// console.log('do not have posts');
+						console.log('do not have posts');
 						// Do not have posts so fetch some from API
-						fetchFromAPI('posts', this.postsNumber).then((posts) => {
+						fetchFromAPI().then((posts) => {
 							resolve(this.showPosts(posts, true));
 						});
 					}
@@ -97,18 +103,19 @@ class App extends Component {
 				});
 			});
 
+		// Get the pages
 		store.outbox('readwrite')
 			.then(db => db.getAll())
 			.then(allObjs => {
 				return new Promise((resolve, reject) => {
-					if (allObjs.length >= 1) {
-						// console.log('already have pages in indexedDB')
+					if (this.useIDB === true && allObjs.length >= 1) {
+						console.log('already have pages in indexedDB')
 
 						resolve(this.showPages(allObjs));
 					} else {
-						// console.log('do not have posts');
+						console.log('do not have pages');
 
-						fetchFromAPI('pages', 10).then((pages) => {
+						fetchFromAPI('pages').then((pages) => {
 							resolve(this.showPages(pages, true));
 						});
 					}
@@ -123,6 +130,7 @@ class App extends Component {
 	};
 
 	render() {
+		console.log(this.state);
 		return (
 			<Router>
 				<div>
