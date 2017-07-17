@@ -24,17 +24,19 @@ class App extends Component {
 	};
 
 	showPosts = (posts, deep = false) => {
-		return posts.map((item, i) => {
-			if (deep === false) {
-				item = item.post;
-			}
+		return posts.posts.map((post, i) => {
 
+			// console.log(post);
+
+			if (deep !== false) {
+				post = post.post;
+			}
 			return (
 				<Article
-					content={ item.content }
-					excerpt={ item.excerpt }
-					link={ `/posts/${item.id}` }
-					title={ item.title }
+					content={ post.content }
+					excerpt={ post.excerpt }
+					link={ `/posts/${post.id}` }
+					title={ post.title }
 					isList={ true }
 					key={ i }
 				/>
@@ -43,10 +45,12 @@ class App extends Component {
 	};
 
 	showPages = (pages, deep = false) => {
-		return pages.map(item => {
-			if (deep === false) {
-				item = item.post;
-			}
+		return pages.pages.map(item => {
+			console.log(item);
+
+			// if (deep === false) {
+			// 	item = item.post;
+			// }
 
 			if (item.slug === 'style-guide') {
 				return null;
@@ -79,12 +83,11 @@ class App extends Component {
 		store.outbox('readwrite')
 			.then(db => db.getAll())
 			.then(allObjs => {
-				console.log('cdm', allObjs);
 				return new Promise((resolve, reject) => {
 					if (allObjs.length >= 1) {
+						// console.log(allObjs);
 						// console.log('already have posts in indexedDB')
-
-						resolve(this.showPosts(allObjs));
+						resolve(this.showPosts(allObjs[0]));
 					} else {
 						// console.log('do not have posts');
 						// Do not have posts so fetch some from API
@@ -94,10 +97,37 @@ class App extends Component {
 					}
 				})
 			}).then(posts => {
+
+				console.log('componentDidMount posts', posts);
+
 				this.setState({
 					posts
 				});
 			});
+
+			store.outbox('readwrite')
+				.then(db => db.getAll())
+				.then(allObjs => {
+					return new Promise((resolve, reject) => {
+						if (allObjs.length >= 1) {
+							// console.log(allObjs);
+							// console.log('already have posts in indexedDB')
+							resolve(this.showPages(allObjs[0]));
+						} else {
+							// console.log('do not have posts');
+							// Do not have posts so fetch some from API
+							fetchFromAPI('posts', this.postsNumber).then((pages) => {
+								resolve(this.showPages(pages, true));
+							});
+						}
+					})
+				}).then(pages => {
+					console.log('componentDidMount posts', pages);
+
+					this.setState({
+						pages
+					});
+				});
 
 		// store.outbox('readwrite')
 		// 	.then(db => db.getAll())
