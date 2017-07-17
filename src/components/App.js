@@ -23,14 +23,8 @@ class App extends Component {
 		this.useIDB = false;
 	};
 
-	showPosts = (posts, deep = false) => {
+	showPosts = (posts) => {
 		return posts.posts.map((post, i) => {
-
-			// console.log(post);
-
-			if (deep !== false) {
-				post = post.post;
-			}
 			return (
 				<Article
 					content={ post.content }
@@ -44,23 +38,10 @@ class App extends Component {
 		});
 	};
 
-	showPages = (pages, deep = false) => {
-		return pages.pages.map(item => {
-			console.log(item);
+	showPages = (pages) => {
+		return pages.pages.map((item, i) => {
+			const href = (item.slug === 'home') ? '/' : `/pages/${item.slug}`;
 
-			// if (deep === false) {
-			// 	item = item.post;
-			// }
-
-			if (item.slug === 'style-guide') {
-				return null;
-			}
-
-			let href = `/pages/${item.slug}`;
-
-			if (item.slug === 'home') {
-				href = '/';
-			}
 			return (
 				<Link
 					to={{
@@ -71,7 +52,7 @@ class App extends Component {
 				  		  }
 			  		}
 					}}
-					key={ item.id }
+					key={ i }
 				>
 					{ item.title }
 				</Link>
@@ -89,17 +70,14 @@ class App extends Component {
 						// console.log('already have posts in indexedDB')
 						resolve(this.showPosts(allObjs[0]));
 					} else {
-						console.log('do not have posts');
+						// console.log('do not have posts');
 						// Do not have posts so fetch some from API
 						fetchFromAPI().then((posts) => {
-							resolve(this.showPosts(posts, true));
+							resolve(this.showPosts(posts));
 						});
 					}
 				})
 			}).then(posts => {
-
-				console.log('componentDidMount posts', posts);
-
 				this.setState({
 					posts
 				});
@@ -110,7 +88,6 @@ class App extends Component {
 				.then(allObjs => {
 					return new Promise((resolve, reject) => {
 						if (allObjs.length >= 1) {
-							// console.log(allObjs);
 							// console.log('already have posts in indexedDB')
 							resolve(this.showPages(allObjs[0]));
 						} else {
@@ -122,36 +99,10 @@ class App extends Component {
 						}
 					})
 				}).then(pages => {
-					console.log('componentDidMount posts', pages);
-
 					this.setState({
 						pages
 					});
 				});
-
-		// store.outbox('readwrite')
-		// 	.then(db => db.getAll())
-		// 	.then(allObjs => {
-		// 		return new Promise((resolve, reject) => {
-		// 			if (allObjs.length >= 1) {
-		// 				// console.log('already have pages in indexedDB')
-
-		// 				resolve(this.showPages(allObjs));
-		// 			} else {
-		// 				// console.log('do not have posts');
-
-		// 				fetchFromAPI('pages', 10).then((pages) => {
-		// 					resolve(this.showPages(pages, true));
-		// 				});
-		// 			}
-		// 		})
-		// 	}).then(pages => {
-		// 		// console.log('Here are the pages', pages);
-		// 		// Populate this.state.pages with the returned pages
-		// 		this.setState({
-		// 			pages
-		// 		});
-		// 	});
 	};
 
 	render() {
