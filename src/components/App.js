@@ -7,6 +7,7 @@ import Posts from './Posts';
 import Article from './Article';
 import SinglePage from './SinglePage';
 import Notes from './Notes';
+import Footer from './Footer';
 
 import store from './helpers/store';
 import fetchFromAPI from './helpers/fetchFromAPI';
@@ -78,6 +79,7 @@ class App extends Component {
 		store.outbox('readwrite')
 			.then(db => db.getAll())
 			.then(allObjs => {
+				console.log('cdm', allObjs);
 				return new Promise((resolve, reject) => {
 					if (allObjs.length >= 1) {
 						// console.log('already have posts in indexedDB')
@@ -97,52 +99,44 @@ class App extends Component {
 				});
 			});
 
-		store.outbox('readwrite')
-			.then(db => db.getAll())
-			.then(allObjs => {
-				return new Promise((resolve, reject) => {
-					if (allObjs.length >= 1) {
-						// console.log('already have pages in indexedDB')
+		// store.outbox('readwrite')
+		// 	.then(db => db.getAll())
+		// 	.then(allObjs => {
+		// 		return new Promise((resolve, reject) => {
+		// 			if (allObjs.length >= 1) {
+		// 				// console.log('already have pages in indexedDB')
 
-						resolve(this.showPages(allObjs));
-					} else {
-						// console.log('do not have posts');
+		// 				resolve(this.showPages(allObjs));
+		// 			} else {
+		// 				// console.log('do not have posts');
 
-						fetchFromAPI('pages', 10).then((pages) => {
-							resolve(this.showPages(pages, true));
-						});
-					}
-				})
-			}).then(pages => {
-				// console.log('Here are the pages', pages);
-				// Populate this.state.pages with the returned pages
-				this.setState({
-					pages
-				});
-			});
+		// 				fetchFromAPI('pages', 10).then((pages) => {
+		// 					resolve(this.showPages(pages, true));
+		// 				});
+		// 			}
+		// 		})
+		// 	}).then(pages => {
+		// 		// console.log('Here are the pages', pages);
+		// 		// Populate this.state.pages with the returned pages
+		// 		this.setState({
+		// 			pages
+		// 		});
+		// 	});
 	};
 
 	render() {
+		const navigation = (this.state.pages.length > 0) ? <Navigation pages={ this.state.pages }/> : null;
+
+		const posts = (this.state.posts.length > 0) ? <Posts posts={ this.state.posts } /> : null;
+
 		return (
 			<Router>
 				<div>
-					{
-						(this.state.pages.length > 0) &&
-							<Navigation pages={ this.state.pages }/>
-					}
+					{ navigation }
 					<main>
 						<div className="container container--main">
 							<section className="main__posts">
-								<Route path="/" exact render={ () => {
-									if (this.state.posts.length > 0) {
-										return (
-											<Posts posts={ this.state.posts } />
-										);
-									} else {
-										return null;
-									}
-								} }
-								/>
+								<Route path="/" exact render={ () => posts } />
 								<Route path="/posts/:postid" render={ (props) => {
 									if (this.state.pages.length > 0) {
 										return (
@@ -167,11 +161,7 @@ class App extends Component {
 						</div>
 					</main>
 
-					<footer>
-						<div className="container">
-							<p>&copy;2006 - 2017 Andrew JD Hudson</p>
-						</div>
-					</footer>
+					<Footer />
 				</div>
 			</Router>
 		);
