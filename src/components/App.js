@@ -20,11 +20,11 @@ class App extends Component {
 			posts: [],
 			pages: [],
 		};
-		this.useIDB = false;
+		this.useIDB = true;
 	};
 
 	showPosts = (posts) => {
-		return posts.posts.map((post, i) => {
+		return posts.map((post, i) => {
 			return (
 				<Article
 					content={ post.content }
@@ -39,8 +39,9 @@ class App extends Component {
 	};
 
 	showPages = (pages) => {
-		return pages.pages.map((item, i) => {
-			const href = (item.slug === 'home') ? '/' : `/pages/${item.slug}`;
+		return pages.map((page, i) => {
+
+			const href = (page.slug === 'home') ? '/' : `/pages/${page.slug}`;
 
 			return (
 				<Link
@@ -48,13 +49,13 @@ class App extends Component {
 					  pathname: href,
 					  state: {
 						  blogInfo: {
-							  'content': item.content,
+							  'content': page.content,
 				  		  }
 			  		}
 					}}
 					key={ i }
 				>
-					{ item.title }
+					{ page.title }
 				</Link>
 			);
 		});
@@ -62,47 +63,47 @@ class App extends Component {
 
 	componentDidMount() {
 		// get the posts
-		store.outbox('readwrite')
-			.then(db => db.getAll())
-			.then(allObjs => {
-				return new Promise((resolve, reject) => {
-					if (this.useIDB === true && allObjs.length >= 1) {
-						// console.log('already have posts in indexedDB')
-						resolve(this.showPosts(allObjs[0]));
-					} else {
-						// console.log('do not have posts');
-						// Do not have posts so fetch some from API
-						fetchFromAPI().then((posts) => {
-							resolve(this.showPosts(posts));
-						});
-					}
-				})
-			}).then(posts => {
-				this.setState({
-					posts
-				});
-			});
-
+		if (this.useIDB === true) {
 			store.outbox('readwrite')
 				.then(db => db.getAll())
 				.then(allObjs => {
 					return new Promise((resolve, reject) => {
 						if (allObjs.length >= 1) {
 							// console.log('already have posts in indexedDB')
-							resolve(this.showPages(allObjs[0]));
+							resolve(allObjs[0]);
 						} else {
 							// console.log('do not have posts');
 							// Do not have posts so fetch some from API
-							fetchFromAPI('posts', this.postsNumber).then((pages) => {
-								resolve(this.showPages(pages, true));
+							fetchFromAPI().then((posts) => {
+								resolve(posts);
 							});
 						}
 					})
-				}).then(pages => {
+				}).then((results) => {
+					const posts = this.showPosts(results.posts);
+					const pages = this.showPages(results.pages);
+
 					this.setState({
+						posts,
 						pages
 					});
 				});
+		} else {
+			return new Promise((resolve, reject) => {
+				fetchFromAPI().then((posts) => {
+					resolve(this.showPosts(posts));
+				});
+			})
+			.then((results) => {
+				const posts = this.showPosts(results.posts);
+				const pages = this.showPages(results.pages);
+
+				this.setState({
+					posts,
+					pages
+				});
+			});
+		}
 	};
 
 	render() {
