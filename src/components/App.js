@@ -1,6 +1,6 @@
 import { h, Component } from 'preact';
 
-import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 
 import Navigation from './Navigation';
 import Posts from './Posts';
@@ -11,6 +11,8 @@ import Footer from './Footer';
 
 import store from './helpers/store';
 import fetchFromAPI from './helpers/fetchFromAPI';
+import showPages from './helpers/showPages';
+import showPosts from './helpers/showPosts';
 
 class App extends Component {
 	constructor(props) {
@@ -21,44 +23,6 @@ class App extends Component {
 			pages: [],
 		};
 		this.useIDB = true;
-	};
-
-	showPosts = (posts) => {
-		return posts.map((post, i) => {
-			return (
-				<Article
-					content={ post.content }
-					excerpt={ post.excerpt }
-					link={ `/posts/${post.id}` }
-					title={ post.title }
-					isList={ true }
-					key={ i }
-				/>
-			);
-		});
-	};
-
-	showPages = (pages) => {
-		return pages.map((page, i) => {
-
-			const href = (page.slug === 'home') ? '/' : `/pages/${page.slug}`;
-
-			return (
-				<Link
-					to={{
-					  pathname: href,
-					  state: {
-						  blogInfo: {
-							  'content': page.content,
-				  		  }
-			  		}
-					}}
-					key={ i }
-				>
-					{ page.title }
-				</Link>
-			);
-		});
 	};
 
 	componentDidMount() {
@@ -80,8 +44,8 @@ class App extends Component {
 						}
 					})
 				}).then((results) => {
-					const posts = this.showPosts(results.posts);
-					const pages = this.showPages(results.pages);
+					const posts = showPosts(results.posts);
+					const pages = showPages(results.pages);
 
 					this.setState({
 						posts,
@@ -95,8 +59,8 @@ class App extends Component {
 				});
 			})
 			.then((results) => {
-				const posts = this.showPosts(results.posts);
-				const pages = this.showPages(results.pages);
+				const posts = showPosts(results.posts);
+				const pages = showPages(results.pages);
 
 				this.setState({
 					posts,
