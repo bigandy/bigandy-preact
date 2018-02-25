@@ -1,8 +1,7 @@
 import { h, Component } from 'preact';
 
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 
-import Navigation from './Navigation';
 import Posts from './Posts';
 import Article from './Article';
 import SinglePage from './SinglePage';
@@ -21,6 +20,8 @@ class App extends Component {
 		this.state = {
 			posts: [],
 			pages: [],
+			showFooter: false,
+			showNotes: false,
 		};
 		this.useIDB = true;
 	};
@@ -49,7 +50,9 @@ class App extends Component {
 
 					this.setState({
 						posts,
-						pages
+						pages,
+						showFooter: true,
+						showNotes: true
 					});
 				});
 		} else {
@@ -64,21 +67,33 @@ class App extends Component {
 
 				this.setState({
 					posts,
-					pages
+					pages,
+					showFooter: true,
+					showNotes: true
 				});
 			});
 		}
 	};
 
 	render() {
-		const navigation = (this.state.pages.length > 0) ? <Navigation pages={ this.state.pages }/> : null;
-
+		const nav = this.state.pages ? this.state.pages.map(page => page) : null;
 		const posts = (this.state.posts.length > 0) ? <Posts posts={ this.state.posts } /> : null;
 
 		return (
 			<Router>
 				<div>
-					{ navigation }
+					<header className="header">
+						<div className="container">
+							<h1 className="header__title">
+								<Link to="/">Andrew Hudson</Link>
+							</h1>
+							<nav className="header__nav">
+								{
+								nav
+								}
+							</nav>
+						</div>
+					</header>
 					<main>
 						<div className="container container--main">
 							<section className="main__posts">
@@ -103,11 +118,19 @@ class App extends Component {
 								} } />
 							</section>
 
-							<Route path="/" exact render={() => <Notes /> } />
+							{
+								(this.state.showNotes === true) &&
+								<Route path="/" exact render={() => <Notes /> } />
+							}
 						</div>
 					</main>
 
-					<Footer />
+					{
+						(this.state.showFooter === true) &&
+							<Footer />
+					}
+
+
 				</div>
 			</Router>
 		);

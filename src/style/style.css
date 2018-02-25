@@ -465,7 +465,8 @@ body {
   background-color: rgba(0, 170, 255, 0.4);
   border-bottom: 5px solid rgba(0, 170, 255, 0.4);
   padding-top: 3em;
-  padding-bottom: 2.5em; }
+  padding-bottom: 2.5em;
+  min-height: calc(200px - 5.5em); }
   .header__title {
     margin-top: 0;
     font-size: 3rem;

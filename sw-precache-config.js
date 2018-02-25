@@ -5,8 +5,7 @@ module.exports = {
     'build/manifest.json',
     'build/static/**/!(*map*)',
     'build/fonts/*.woff2',
-    'build/fonts/*.woff',
-    'build/images/*.jpg'
+    'build/images/me-avatar.webp'
   ],
   dontCacheBustUrlsMatching: /\.\w{8}\./,
   swFilePath: 'build/service-worker.js'

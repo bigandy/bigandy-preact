@@ -256,6 +256,7 @@ body {
 	border-bottom: 5px solid hsla(200, 100%, 50%, 0.4);
 	padding-top: 3em;
 	padding-bottom: 2.5em;
+	min-height: calc(200px - 5.5em);
 
 	&__title {
 		margin-top: 0;
